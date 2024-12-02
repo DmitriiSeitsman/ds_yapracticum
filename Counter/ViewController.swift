@@ -7,18 +7,18 @@
 
 import UIKit
 import Foundation
-let dateAndTime = Date().formatted(.dateTime)
+//var dateAndTime = Date().formatted(.dateTime)
 var counterDigit: Int = 0
 var arrayOfchanges: [String] = []
 var digit: String = "0"
 class ViewController: UIViewController {
     @IBOutlet var counter: UILabel!
-    @IBOutlet var Button: UIButton!
+    @IBOutlet var plusButton: UIButton!
     @IBOutlet var minusButton: UIButton!
     @IBOutlet var textField: UITextView!
     //функция обновления текстового поля
     func changesHistory() {
-        arrayOfchanges.append("[\(dateAndTime)]: значение изменено на \(digit)")
+        arrayOfchanges.append("[\(Date().formatted(.dateTime))]: значение изменено на \(digit)")
         textField.text = arrayOfchanges.joined(separator: "\n")
     }
     //Нажатие кнопки плюс
@@ -32,7 +32,7 @@ class ViewController: UIViewController {
     @IBAction func minusPress(_ sender: Any) {
         digit = "-1"
         if counter.text == "0" {
-            arrayOfchanges.append("[\(dateAndTime)]: попытка уменьшить значение счетчика ниже 0")
+            arrayOfchanges.append("[\(Date().formatted(.dateTime))]: попытка уменьшить значение счетчика ниже 0")
             textField.text = arrayOfchanges.joined(separator: "\n")
             let alert = UIAlertController(title: "Ошибка", message: "0 - минимальное значение счетчика", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
@@ -45,7 +45,7 @@ class ViewController: UIViewController {
     }
 //Нажатие кнопки сброс
     @IBAction func resetPress(_ sender: Any) {
-        arrayOfchanges.append("[\(dateAndTime)]: значение сброшено на 0")
+        arrayOfchanges.append("[\(Date().formatted(.dateTime))]: значение сброшено на 0")
         textField.text = arrayOfchanges.joined(separator: "\n")
         counterDigit = 0
         counter.text = "\(counterDigit)"
