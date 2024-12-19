@@ -1,5 +1,6 @@
 import UIKit
 import Foundation
+
 final class MovieQuizViewController: UIViewController {
     private var currentQuestionIndex: Int = .zero
     private var correctAnswers: Int = .zero
@@ -16,11 +17,12 @@ final class MovieQuizViewController: UIViewController {
         QuizQuestion(image: "Tesla", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
         QuizQuestion(image: "Vivarium", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
     ]
-    @IBOutlet var yesButton: UIButton!
-    @IBOutlet var noButton: UIButton!
-    @IBOutlet var counterLabel: UILabel!
-    @IBOutlet var textLabel: UILabel!
-    @IBOutlet var imageView: UIImageView!
+    @IBOutlet private var yesButton: UIButton!
+    @IBOutlet private var noButton: UIButton!
+    @IBOutlet private var counterLabel: UILabel!
+    @IBOutlet private var textLabel: UILabel!
+    @IBOutlet private var imageView: UIImageView!
+    
     // Вью модель для состояния "Вопрос показан"
     private struct QuizStepViewModel {
         let image: UIImage
@@ -38,6 +40,7 @@ final class MovieQuizViewController: UIViewController {
         let text: String
         let correctAnswer: Bool
     }
+    
     override func viewDidLoad() {
         let currentQuestion = questions[currentQuestionIndex]
         show(quiz: convert(model: currentQuestion))
@@ -51,10 +54,10 @@ final class MovieQuizViewController: UIViewController {
         if currentQuestionIndex == questions.count - 1 {
             alert()
             imageView.layer.borderWidth = 0
-            self.currentQuestionIndex = 0
-            let firstQuestion = self.questions[self.currentQuestionIndex]
-            let viewModel = self.convert(model: firstQuestion)
-            self.show(quiz: viewModel)
+            currentQuestionIndex = 0
+            let firstQuestion = questions[currentQuestionIndex]
+            let viewModel = convert(model: firstQuestion)
+            show(quiz: viewModel)
         } else {
             // идём в состояние "Вопрос показан"
             currentQuestionIndex += 1
@@ -66,7 +69,7 @@ final class MovieQuizViewController: UIViewController {
     }
     // метод конвертации, который принимает моковый вопрос и возвращает вью модель для экрана вопроса
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        return QuizStepViewModel(image: UIImage(named: model.image) ?? UIImage(),
+        QuizStepViewModel(image: UIImage(named: model.image) ?? UIImage(),
                                  question: model.text,
                                  questionNumber: "\(currentQuestionIndex + 1)/\(questions.count)")
     }
