@@ -1,10 +1,15 @@
 import UIKit
 import Foundation
 
-final class MovieQuizViewController: UIViewController {
+final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, AlertPresenterDelegate {
+    
     private var currentQuestionIndex: Int = .zero
     private var correctAnswers: Int = .zero
     private var answered: Bool = true
+    private let questionsAmount: Int = 10
+    private var questionFactory: QuestionFactoryProtocol?
+    private var alertPresenter: AlertPresenter?
+    private var currentQuestion: QuizQuestion?
     
     @IBOutlet private var yesButton: UIButton!
     @IBOutlet private var noButton: UIButton!
@@ -13,36 +18,62 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet private var imageView: UIImageView!
     
     override func viewDidLoad() {
-        let currentQuestion = QuestionFactory.questions[currentQuestionIndex]
-        show(quiz: convert(model: currentQuestion))
+        
+        // MARK: - QuestionFactoryDelegate
+        func didReceiveNextQuestion(question: QuizQuestion?) {}
+        
         super.viewDidLoad()
+        let questionFactory = QuestionFactory()
+        questionFactory.setup(delegate: self)
+        self.questionFactory = questionFactory
+        questionFactory.requestNextQuestion()
+    }
+    
+    func presentAlert() {}
+    
+    func didReceiveNextQuestion(question: QuizQuestion?) {
+        guard let question = question else {
+            return
+        }
+        currentQuestion = question
+        let viewModel = convert(model: question)
+        DispatchQueue.main.async { [weak self] in
+            self?.show(quiz: viewModel)
+        }
     }
     // приватный метод, который содержит логику перехода в один из сценариев
     // метод ничего не принимает и ничего не возвращает
     private func showNextQuestionOrResults() {
         buttonsAvailable(available: true)
         // идём в состояние "Результат квиза"
-        if currentQuestionIndex == questions.count - 1 {
-            alert()
-            imageView.layer.borderWidth = 0
-            currentQuestionIndex = 0
-            let firstQuestion = questions[currentQuestionIndex]
-            let viewModel = convert(model: firstQuestion)
-            show(quiz: viewModel)
+        if currentQuestionIndex == questionsAmount - 1 {
+            let alertModel = AlertModel(alertTitle: "Вы закончили квиз", alertMessage: "Вы правильно ответили на \(correctAnswers) из \(questionsAmount) вопросов", buttonText: "Сыграть еще раз", completion: goToStart)
+            let alertPresenter = AlertPresenter()
+            alertPresenter.presentAlert(model: alertModel)
+            guard let alert = alertPresenter.alert else { return }
+            present(alert, animated: true, completion: nil)
         } else {
             // идём в состояние "Вопрос показан"
             currentQuestionIndex += 1
-            let nextQuestion = questions[currentQuestionIndex]
-            let viewModel = convert(model: nextQuestion)
-            show(quiz: viewModel)
+            let questionFactory = QuestionFactory()
+            questionFactory.setup(delegate: self)
+            self.questionFactory = questionFactory
+            questionFactory.requestNextQuestion()
             imageView.layer.borderWidth = 0
         }
+    }
+    
+    func goToStart() -> Void {
+        imageView.layer.borderWidth = 0
+        currentQuestionIndex = 0
+        correctAnswers = 0
+        viewDidLoad()
     }
     // метод конвертации, который принимает моковый вопрос и возвращает вью модель для экрана вопроса
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         QuizStepViewModel(image: UIImage(named: model.image) ?? UIImage(),
-                                 question: model.text,
-                                 questionNumber: "\(currentQuestionIndex + 1)/\(questions.count)")
+                          question: model.text,
+                          questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
     }
     // приватный метод вывода на экран вопроса, который принимает на вход вью модель вопроса и ничего не возвращает
     private func show(quiz step: QuizStepViewModel) {
@@ -61,12 +92,7 @@ final class MovieQuizViewController: UIViewController {
         yesButton.isEnabled = available
         noButton.isEnabled = available
     }
-    // функция вывода на экран предупреждения об окончании теста
-    private func alert() {
-        let alert = UIAlertController(title: "Раунд окончен", message: "Ваш рейтинг: \(correctAnswers) из \(questions.count)", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Сыграть еще раз", style: .default, handler: nil))
-        present(alert, animated: true, completion: nil)
-    }
+    
     // приватный метод, который меняет цвет рамки
     // принимает на вход булевое значение и ничего не возвращает
     private func showAnswerResult(isCorrect: Bool) {
@@ -83,12 +109,16 @@ final class MovieQuizViewController: UIViewController {
     }
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        let currentQuestion = questions[currentQuestionIndex]
+        guard let currentQuestion = currentQuestion else {
+            return
+        }
         let givenAnswer = true
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-        let currentQuestion = questions[currentQuestionIndex]
+        guard let currentQuestion = currentQuestion else {
+            return
+        }
         let givenAnswer = false
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
