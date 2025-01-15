@@ -7,18 +7,14 @@
 import Foundation
 import UIKit
 
-protocol AlertPresenterDelegate: AnyObject {
-    func presentAlert()
-}
-
 class AlertPresenter {
-  
+    
     var alert: UIAlertController?
-  
+    
     func presentAlert(model: AlertModel) {
         alert = UIAlertController(title: model.alertTitle, message: model.alertMessage, preferredStyle: .alert)
         guard let alert = self.alert else { return }
-        alert.addAction(UIAlertAction(title: model.buttonText, style: .default) { _ in model.completion()})
+        alert.addAction(UIAlertAction(title: model.buttonText, style: .default) {_ in model.completion()})
     }
 }
 

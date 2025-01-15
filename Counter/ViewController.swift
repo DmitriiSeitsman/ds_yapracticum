@@ -16,22 +16,39 @@ final class ViewController: UIViewController {
     @IBOutlet private var plusButton: UIButton!
     @IBOutlet private var minusButton: UIButton!
     @IBOutlet private var textField: UITextView!
-   
-   override func viewDidLoad() {
+    
+    override func viewDidLoad() {
         super.viewDidLoad()
-        counter.text = "\(counterValue)"
-        textField.text = "История изменений:"
+    getKeys()
+       counter.text = "\(counterValue)"
+       textField.text = "\(String(changeHistory.last ?? "история отсутствует"))"
     }
+    
+    private func getKeys() {
+        // Получаем словарь всех значений
+        if UserDefaults.standard.dictionaryRepresentation().count != 0 {
+            let allValues = UserDefaults.standard.dictionaryRepresentation()
+            changeHistory.append(allValues["lastChange"] as? String ?? "история отсутствует")
+            counterValue = allValues["counterValue"] as? Int ?? 0
+        } else {
+            changeHistory.append("0")
+            counterValue = 0
+        }
+        }
+    
     //функция обновления истории изменений счетчика
     private func changesHistory() {
         changeHistory.append("[\(Date().formatted(.dateTime))]: значение изменено на \(lastChange)")
         textField.text = changeHistory.joined(separator: "\n")
+        let element = changeHistory.last
+        UserDefaults.standard.set(element, forKey: "lastChange")
     }
     //Нажатие кнопки плюс
     @IBAction private func counterPush(_ sender: Any) {
         lastChange = "+1"
         counterValue += 1
         counter.text = "\(counterValue)"
+        UserDefaults.standard.set(counterValue, forKey: "counterValue")
         changesHistory()
     }
     //Нажатие кнопки минус
@@ -46,6 +63,7 @@ final class ViewController: UIViewController {
         } else {
             counterValue -= 1
             counter.text = "\(counterValue)"
+            UserDefaults.standard.set(counterValue, forKey: "counterValue")
             changesHistory()
         }
     }
@@ -55,6 +73,7 @@ final class ViewController: UIViewController {
         textField.text = changeHistory.joined(separator: "\n")
         counterValue = 0
         counter.text = "\(counterValue)"
+        UserDefaults.standard.set(counterValue, forKey: "counterValue")
     }
 }
 
