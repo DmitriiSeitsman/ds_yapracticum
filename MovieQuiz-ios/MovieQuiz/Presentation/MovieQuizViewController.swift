@@ -1,5 +1,4 @@
 import UIKit
-import Foundation
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
@@ -20,10 +19,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     @IBOutlet private var imageView: UIImageView!
     
     override func viewDidLoad() {
-        func didReceiveNextQuestion(question: QuizQuestion?) {}
         super.viewDidLoad()
-        let questionFactory = QuestionFactory()
-        questionFactory.setup(delegate: self)
+        let questionFactory = QuestionFactory(delegate: self)
         self.questionFactory = questionFactory
         questionFactory.requestNextQuestion()
     }
@@ -51,16 +48,23 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             let gamesCount = statisticService.gamesCount
             let bestGameCorrect = statisticService.bestGame.correct
             let bestGameTotal = statisticService.bestGame.total
-            let date = statisticService.bestGame.date.formatted(.dateTime)
+            let date = statisticService.bestGame.date.dateTimeString
             let totalCorrect = statisticService.totalCorrect
             
             if gamesCount != 0 {
-                averageAccuracy = Double(100*totalCorrect/(10*gamesCount))
+                averageAccuracy = Double(100 * totalCorrect / (10 * gamesCount))
             } else {
                 averageAccuracy = 0
             }
             
-            let alertModel = AlertModel(alertTitle: "Вы закончили квиз", alertMessage: "Вы правильно ответили на \(correctAnswers) из \(questionsAmount) вопросов \n Количество сыгранных квизов: \(gamesCount) \n Рекорд: \(bestGameCorrect)/\(bestGameTotal) (\(date)) \n Средняя точность: \(averageAccuracy) %", buttonText: "Сыграть еще раз", completion: goToStart)
+            let alertModel = AlertModel(alertTitle: "Вы закончили квиз", alertMessage:
+"""
+Ваш результат: \(correctAnswers)/\(questionsAmount)
+Количество сыгранных квизов: \(gamesCount)
+Рекорд: \(bestGameCorrect)/\(bestGameTotal) (\(date))
+Средняя точность: \(averageAccuracy) %"
+""",
+            buttonText: "Сыграть еще раз", completion: goToStart)
             
             let alertPresenter = AlertPresenter()
             alertPresenter.presentAlert(model: alertModel)
@@ -70,8 +74,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         } else {
             // идём в состояние "Вопрос показан"
             currentQuestionIndex += 1
-            let questionFactory = QuestionFactory()
-            questionFactory.setup(delegate: self)
+            let questionFactory = QuestionFactory(delegate: self)
             self.questionFactory = questionFactory
             questionFactory.requestNextQuestion()
             imageView.layer.borderWidth = 0
@@ -79,7 +82,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     //функция сброса параметров
-    private func goToStart() -> Void {
+    private func goToStart() {
         imageView.layer.borderWidth = 0
         currentQuestionIndex = 0
         correctAnswers = 0
@@ -88,7 +91,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     // метод конвертации, который принимает моковый вопрос и возвращает вью модель для экрана вопроса
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        QuizStepViewModel(image: UIImage(named: model.image) ?? UIImage(),
+        QuizStepViewModel(image: UIImage(named: model.imageName) ?? UIImage(),
                           question: model.text,
                           questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
     }
@@ -124,7 +127,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         buttonsAvailable(available: false)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else { return }
-            self.showNextQuestionOrResults()
+            showNextQuestionOrResults()
         }
     }
     
