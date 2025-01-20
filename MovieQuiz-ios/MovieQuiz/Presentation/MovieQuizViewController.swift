@@ -27,11 +27,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         questionFactory.requestNextQuestion()
     }
     
-    func setFonts() {
-        counterLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
-        questionLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
-        noButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
-        yesButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
+    private func setFonts() {
+        counterLabel.font = UIFont.ysDisplayMedium20
+        questionLabel.font = UIFont.ysDisplayMedium20
+        noButton.titleLabel?.font = UIFont.ysDisplayMedium20
+        yesButton.titleLabel?.font = UIFont.ysDisplayMedium20
     }
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
@@ -73,7 +73,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
 Рекорд: \(bestGameCorrect)/\(bestGameTotal) (\(date))
 Средняя точность: \(averageAccuracy) %"
 """,
-            buttonText: "Сыграть еще раз", completion: goToStart)
+                                        buttonText: "Сыграть еще раз", completion: goToStart)
             
             let alertPresenter = AlertPresenter()
             alertPresenter.presentAlert(model: alertModel)
