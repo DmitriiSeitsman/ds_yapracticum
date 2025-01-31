@@ -53,9 +53,31 @@ final class QuestionFactory: QuestionFactoryProtocol {
             
             let rating = Float(movie.rating) ?? 0
             
-            let text = "Рейтинг этого фильма больше чем 7?"
-            let correctAnswer = rating > 7
+            let questionForUser = ["higher", "lower"]
+            let chooseQuestion = questionForUser.randomElement()
+            let text: String
+            var correctAnswer: Bool = false
             
+            let roundedHigh = Int(rating.rounded(.up))
+            let roundedLow = Int(rating.rounded(.down))
+            
+            let arrayOfRandoms: [Int] = [roundedHigh, roundedLow]
+            let selectionOfRandom: Int = arrayOfRandoms.randomElement() ?? 0
+            
+            if chooseQuestion == "higher" {
+                text = "Рейтинг этого фильма больше чем \(selectionOfRandom)?"
+                if selectionOfRandom == roundedLow {
+                    correctAnswer = roundedHigh > roundedLow} else {
+                        correctAnswer = roundedHigh <= roundedLow
+                    }
+            } else {
+                text = "Рейтинг этого фильма меньше чем \(selectionOfRandom)?"
+                if selectionOfRandom == roundedHigh {
+                    correctAnswer = roundedLow < roundedHigh} else {
+                        correctAnswer = roundedLow >= roundedHigh
+                    }
+            }
+         
             let question = QuizQuestion(imageName: imageData,
                                         text: text,
                                         correctAnswer: correctAnswer)
