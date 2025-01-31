@@ -33,6 +33,7 @@
 		B8D25D472D32FEA200D8A4BF /* GameResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D25D462D32FE9B00D8A4BF /* GameResult.swift */; };
 		B8D25D492D32FFA700D8A4BF /* StatisticService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D25D482D32FF9C00D8A4BF /* StatisticService.swift */; };
 		B8E462722D0CAD9C0069679A /* UIFont+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8E462712D0CAD8C0069679A /* UIFont+Extensions.swift */; };
+		B8F91CEE2D4D382D00FDFD6F /* MostPopularMovie.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F91CED2D4D382300FDFD6F /* MostPopularMovie.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,6 +65,7 @@
 		B8D25D462D32FE9B00D8A4BF /* GameResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameResult.swift; sourceTree = "<group>"; };
 		B8D25D482D32FF9C00D8A4BF /* StatisticService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticService.swift; sourceTree = "<group>"; };
 		B8E462712D0CAD8C0069679A /* UIFont+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+Extensions.swift"; sourceTree = "<group>"; };
+		B8F91CED2D4D382300FDFD6F /* MostPopularMovie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MostPopularMovie.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +82,7 @@
 		611342392B701CF6003FC2A4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				B8F91CED2D4D382300FDFD6F /* MostPopularMovie.swift */,
 				B8877BF92D48337700C9A5BE /* MostPopularMovies.swift */,
 				B8D25D462D32FE9B00D8A4BF /* GameResult.swift */,
 				B8B0AE0B2D2D7A770084BD95 /* AlertModel.swift */,
@@ -246,6 +249,7 @@
 				AD7AFA552836189F00399704 /* Array+Extensions.swift in Sources */,
 				B8877BFA2D48337B00C9A5BE /* MostPopularMovies.swift in Sources */,
 				B8B0AE042D2AF2330084BD95 /* QuizResultsViewModel.swift in Sources */,
+				B8F91CEE2D4D382D00FDFD6F /* MostPopularMovie.swift in Sources */,
 				B8B0AE022D2AF2200084BD95 /* QuizStepViewModel.swift in Sources */,
 				B8D25D452D32FE1500D8A4BF /* StatisticServiceProtocol.swift in Sources */,
 				B8B0AE0C2D2D7A7F0084BD95 /* AlertModel.swift in Sources */,

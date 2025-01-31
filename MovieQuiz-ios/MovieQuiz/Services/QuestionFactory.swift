@@ -5,6 +5,7 @@
 //  Created by Dmitrii Seitsman on 05.01.2025.
 //
 import Foundation
+import UIKit
 
 final class QuestionFactory: QuestionFactoryProtocol {
     private let moviesLoader: MoviesLoading
@@ -15,19 +16,6 @@ final class QuestionFactory: QuestionFactoryProtocol {
         self.moviesLoader = moviesLoader
         self.delegate = delegate
     }
-    
-    //    private let questions: [QuizQuestion] = [
-    //        QuizQuestion(imageName: "The Godfather", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-    //        QuizQuestion(imageName: "The Dark Knight", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-    //        QuizQuestion(imageName: "Kill Bill", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-    //        QuizQuestion(imageName: "The Avengers", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-    //        QuizQuestion(imageName: "Deadpool", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-    //        QuizQuestion(imageName: "The Green Knight", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-    //        QuizQuestion(imageName: "Old", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
-    //        QuizQuestion(imageName: "The Ice Age Adventures of Buck Wild", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
-    //        QuizQuestion(imageName: "Tesla", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
-    //        QuizQuestion(imageName: "Vivarium", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
-    //    ]
     
     func loadData() {
         moviesLoader.loadMovies { [weak self] result in
@@ -56,7 +44,11 @@ final class QuestionFactory: QuestionFactoryProtocol {
             do {
                 imageData = try Data(contentsOf: movie.resizedImageURL)
             } catch {
-                print("Failed to load image")
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    self.delegate?.didFailToLoadImage(with: "Не удалось загрузить постер")
+                    return
+                }
             }
             
             let rating = Float(movie.rating) ?? 0

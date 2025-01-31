@@ -19,7 +19,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     @IBOutlet private var counterLabel: UILabel!
     @IBOutlet private var textLabel: UILabel!
     @IBOutlet private var imageView: UIImageView!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,34 +27,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         imageView.layer.cornerRadius = 20
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         statisticService = StatisticService()
-        showLoadingIndicator()
-        questionFactory?.loadData()
-    }
-    
-    private func showLoadingIndicator() {
-        activityIndicator.isHidden = false
         activityIndicator.startAnimating()
-    }
-    
-    private func hideLoadingIndicator() {
-        activityIndicator.isHidden = true
-        activityIndicator.stopAnimating()
-    }
-    
-    private func showNetworkError(message: String) {
-        hideLoadingIndicator()
-        
-        let model = AlertModel(alertTitle: "Ошибка",
-                               alertMessage: message,
-                               buttonText: "Попробовать еще раз") { [weak self] in
-            guard let self = self else { return }
-            
-            self.currentQuestionIndex = 0
-            self.correctAnswers = 0
-            self.questionFactory?.requestNextQuestion()
-        }
-        
-        alertPresenter?.presentAlert(model: model)
+        questionFactory?.loadData()
     }
     
     private func setFonts() {
@@ -74,12 +48,37 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     func didLoadDataFromServer() {
-        activityIndicator.isHidden = true
+        activityIndicator.stopAnimating()
         questionFactory?.requestNextQuestion()
     }
     
     func didFailToLoadData(with error: Error) {
         showNetworkError(message: error.localizedDescription)
+    }
+    
+    func didFailToLoadImage(with message: String) {
+        showNetworkError(message: message)
+    }
+    
+    private func presentAlert(with alertModel: AlertModel) {
+        let alertPresenter = AlertPresenter()
+        alertPresenter.presentAlert(model: alertModel)
+        guard let alert = alertPresenter.alert else { return }
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func showNetworkError(message: String) {
+        activityIndicator.stopAnimating()
+        let model = AlertModel(alertTitle: "Ошибка",
+                               alertMessage: message,
+                               buttonText: "Попробовать еще раз") { [weak self] in
+            guard let self = self else { return }
+            
+            self.currentQuestionIndex = 0
+            self.correctAnswers = 0
+            self.questionFactory?.requestNextQuestion()
+        }
+        presentAlert(with: model)
     }
     
     // приватный метод, который содержит логику перехода в один из сценариев
@@ -113,17 +112,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
 Средняя точность: \(averageAccuracy) %"
 """,
                                         buttonText: "Сыграть еще раз", completion: goToStart)
-            
-            let alertPresenter = AlertPresenter()
-            alertPresenter.presentAlert(model: alertModel)
-            guard let alert = alertPresenter.alert else { return }
-            present(alert, animated: true, completion: nil)
-            
+            presentAlert(with: alertModel)
         } else {
             // идём в состояние "Вопрос показан"
             currentQuestionIndex += 1
-            //            let questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
-            //            self.questionFactory = questionFactory
             questionFactory?.requestNextQuestion()
             imageView.layer.borderWidth = 0
         }
