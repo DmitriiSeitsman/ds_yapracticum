@@ -61,7 +61,7 @@
                                     </stackView>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" layoutMarginsFollowReadableWidth="YES" image="Default" translatesAutoresizingMaskIntoConstraints="NO" id="hhI-3V-Se3" userLabel="Preview Image">
                                         <rect key="frame" x="0.0" y="43.5" width="374" height="561"/>
-                                        <color key="backgroundColor" name="YP White"/>
+                                        <color key="backgroundColor" name="YP Background"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="hhI-3V-Se3" secondAttribute="height" multiplier="2:3" id="egG-8f-GAD"/>
                                         </constraints>
@@ -71,7 +71,7 @@
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Рейтинг этого фильма меньше чем 5?" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6LI-5H-TTA" userLabel="Question Label">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6LI-5H-TTA" userLabel="Question Label">
                                         <rect key="frame" x="0.0" y="624.5" width="374" height="99.5"/>
                                         <fontDescription key="fontDescription" name="YSDisplay-Bold" family="YS Display" pointSize="23"/>
                                         <color key="textColor" name="YP White"/>
@@ -122,17 +122,23 @@
                                     </stackView>
                                 </subviews>
                             </stackView>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="PXZ-UF-x40">
+                                <rect key="frame" x="197" y="438" width="20" height="20"/>
+                            </activityIndicatorView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" name="YP Black"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="J6y-oj-dvx" secondAttribute="trailing" constant="20" id="4LN-pK-QSz"/>
                             <constraint firstItem="J6y-oj-dvx" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="10" id="5z9-uB-dSc"/>
+                            <constraint firstItem="PXZ-UF-x40" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ZLy-ok-UXv"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="J6y-oj-dvx" secondAttribute="bottom" id="bNA-WD-42a"/>
                             <constraint firstItem="J6y-oj-dvx" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="eZJ-il-0e1"/>
+                            <constraint firstItem="PXZ-UF-x40" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="xaq-Qq-rq1"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="PXZ-UF-x40" id="wQa-dc-Fzn"/>
                         <outlet property="counterLabel" destination="D6R-44-EFb" id="eSA-sW-e7U"/>
                         <outlet property="imageView" destination="hhI-3V-Se3" id="ZZK-7q-GQT"/>
                         <outlet property="noButton" destination="PPG-4o-3eQ" id="oE2-Qw-lGl"/>
@@ -148,6 +154,9 @@
     </scenes>
     <resources>
         <image name="Default" width="335" height="502"/>
+        <namedColor name="YP Background">
+            <color red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <namedColor name="YP Black">
             <color red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

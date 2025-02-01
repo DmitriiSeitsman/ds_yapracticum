@@ -11,6 +11,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
     private var alertPresenter: AlertPresenter?
+    private var statisticService: StatisticServiceProtocol?
     
     @IBOutlet private var questionLabel: UILabel!
     @IBOutlet private var yesButton: UIButton!
@@ -18,13 +19,17 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     @IBOutlet private var counterLabel: UILabel!
     @IBOutlet private var textLabel: UILabel!
     @IBOutlet private var imageView: UIImageView!
+    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setFonts()
-        let questionFactory = QuestionFactory(delegate: self)
-        self.questionFactory = questionFactory
-        questionFactory.requestNextQuestion()
+        imageView.image = UIImage.init(named: "movie-quiz-background")
+        imageView.layer.cornerRadius = 20
+        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        statisticService = StatisticService()
+        activityIndicator.startAnimating()
+        questionFactory?.loadData()
     }
     
     private func setFonts() {
@@ -41,6 +46,40 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
         }
+    }
+    
+    func didLoadDataFromServer() {
+        activityIndicator.stopAnimating()
+        questionFactory?.requestNextQuestion()
+    }
+    
+    func didFailToLoadData(with error: Error) {
+        showNetworkError(message: error.localizedDescription)
+    }
+    
+    func didFailToLoadImage(with message: String) {
+        showNetworkError(message: message)
+    }
+    
+    private func presentAlert(with alertModel: AlertModel) {
+        let alertPresenter = AlertPresenter()
+        alertPresenter.presentAlert(model: alertModel)
+        guard let alert = alertPresenter.alert else { return }
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func showNetworkError(message: String) {
+        activityIndicator.stopAnimating()
+        let model = AlertModel(alertTitle: "Ошибка",
+                               alertMessage: message,
+                               buttonText: "Попробовать еще раз") { [weak self] in
+            guard let self = self else { return }
+            
+            self.currentQuestionIndex = 0
+            self.correctAnswers = 0
+            self.questionFactory?.requestNextQuestion()
+        }
+        presentAlert(with: model)
     }
     
     // приватный метод, который содержит логику перехода в один из сценариев
@@ -74,18 +113,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
 Средняя точность: \(averageAccuracy) %"
 """,
                                         buttonText: "Сыграть еще раз", completion: goToStart)
-            
-            let alertPresenter = AlertPresenter()
-            alertPresenter.presentAlert(model: alertModel)
-            guard let alert = alertPresenter.alert else { return }
-            present(alert, animated: true, completion: nil)
-            
+            presentAlert(with: alertModel)
         } else {
             // идём в состояние "Вопрос показан"
             currentQuestionIndex += 1
-            let questionFactory = QuestionFactory(delegate: self)
-            self.questionFactory = questionFactory
-            questionFactory.requestNextQuestion()
+            questionFactory?.requestNextQuestion()
             imageView.layer.borderWidth = 0
         }
     }
@@ -100,7 +132,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     // метод конвертации, который принимает моковый вопрос и возвращает вью модель для экрана вопроса
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        QuizStepViewModel(image: UIImage(named: model.imageName) ?? UIImage(),
+        QuizStepViewModel(image: UIImage(data: model.imageName) ?? UIImage(),
                           question: model.text,
                           questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
     }
