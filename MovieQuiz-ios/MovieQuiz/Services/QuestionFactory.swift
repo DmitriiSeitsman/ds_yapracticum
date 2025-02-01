@@ -77,7 +77,7 @@ final class QuestionFactory: QuestionFactoryProtocol {
                         correctAnswer = roundedLow >= roundedHigh
                     }
             }
-         
+            
             let question = QuizQuestion(imageName: imageData,
                                         text: text,
                                         correctAnswer: correctAnswer)
