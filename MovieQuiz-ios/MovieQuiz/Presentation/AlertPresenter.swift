@@ -14,8 +14,8 @@ final class AlertPresenter {
     func presentAlert(model: AlertModel) {
         alert = UIAlertController(title: model.alertTitle, message: model.alertMessage, preferredStyle: .alert)
         guard let alert = alert else { return }
+        alert.view.accessibilityIdentifier = "Game results"
         alert.addAction(UIAlertAction(title: model.buttonText, style: .default) {_ in model.completion()})
     }
 }
-
 
