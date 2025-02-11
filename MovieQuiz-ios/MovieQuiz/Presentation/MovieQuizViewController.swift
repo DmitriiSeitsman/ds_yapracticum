@@ -58,21 +58,12 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         presentAlert(with: model)
     }
     
-    // приватный метод вывода на экран вопроса, который принимает на вход вью модель вопроса и ничего не возвращает
     func show(quiz step: QuizStepViewModel) {
         imageView.image = step.image
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
     }
     
-    // метод изменения рамки
-    private func layerChange() {
-        imageView.layer.masksToBounds = true
-        imageView.layer.borderWidth = 8
-        imageView.layer.cornerRadius = 20
-    }
-    
-    //Доступность кнопок
     func buttonsAvailable(available: Bool) {
         yesButton.isEnabled = available
         noButton.isEnabled = available
@@ -82,6 +73,12 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+    }
+    
+    private func layerChange() {
+        imageView.layer.masksToBounds = true
+        imageView.layer.borderWidth = 8
+        imageView.layer.cornerRadius = 20
     }
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {

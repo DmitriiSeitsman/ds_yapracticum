@@ -56,7 +56,6 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         viewController?.showNetworkError(message: message)
     }
     
-    
     func yesButtonClicked() {
         guard let currentQuestion = currentQuestion else {
             return
@@ -75,6 +74,42 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         let givenAnswer = false
         
         proceedWithAnswer(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+    }
+    
+    func convert(model: QuizQuestion) -> QuizStepViewModel {
+        QuizStepViewModel(image: UIImage(data: model.imageName) ?? UIImage(),
+                          question: model.text,
+                          questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
+    }
+    
+    func didReceiveNextQuestion(question: QuizQuestion?) {
+        guard let question = question else {
+            return
+        }
+        
+        currentQuestion = question
+        let viewModel = convert(model: question)
+        DispatchQueue.main.async { [weak self] in
+            self?.viewController?.show(quiz: viewModel)
+        }
+    }
+    
+    func isLastQuestion() -> Bool {
+        currentQuestionIndex == questionsAmount - 1
+    }
+    
+    func restartGame() {
+        currentQuestionIndex = 0
+        correctAnswers = 0
+        questionFactory?.requestNextQuestion()
+    }
+    
+    private func didAnswer(isCorrectAnswer: Bool) {
+        if isCorrectAnswer { correctAnswers += 1 }
+    }
+    
+    private func switchToNextQuestion() {
+        currentQuestionIndex += 1
     }
     
     private func proceedWithAnswer(isCorrect: Bool) {
@@ -118,57 +153,18 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     private func proceedToNextQuestionOrResults() {
         viewController?.buttonsAvailable(available: true )
-        // идём в состояние "Результат квиза"
         if isLastQuestion() {
             makeResultsMessage()
         } else {
-            // идём в состояние "Вопрос показан"
             switchToNextQuestion()
             questionFactory?.requestNextQuestion()
             viewController?.changeImageLayer()
         }
     }
     
-    //функция сброса параметров
     private  func goToStart() {
         viewController?.changeImageLayer()
         restartGame()
         viewController?.viewDidLoad()
-    }
-    
-    func didReceiveNextQuestion(question: QuizQuestion?) {
-        guard let question = question else {
-            return
-        }
-        
-        currentQuestion = question
-        let viewModel = convert(model: question)
-        DispatchQueue.main.async { [weak self] in
-        self?.viewController?.show(quiz: viewModel)
-        }
-    }
-    
-    private func didAnswer(isCorrectAnswer: Bool) {
-        if isCorrectAnswer { correctAnswers += 1 }
-    }
-    
-    func isLastQuestion() -> Bool {
-        currentQuestionIndex == questionsAmount - 1
-    }
-    
-    func restartGame() {
-        currentQuestionIndex = 0
-        correctAnswers = 0
-        questionFactory?.requestNextQuestion()
-    }
-    
-    func switchToNextQuestion() {
-        currentQuestionIndex += 1
-    }
-    // метод конвертации, который принимает моковый вопрос и возвращает вью модель для экрана вопроса
-    func convert(model: QuizQuestion) -> QuizStepViewModel {
-        QuizStepViewModel(image: UIImage(data: model.imageName) ?? UIImage(),
-                          question: model.text,
-                          questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
     }
 }
